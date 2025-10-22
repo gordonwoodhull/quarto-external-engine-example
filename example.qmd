@@ -1,0 +1,17 @@
+---
+title: "External Engine Test"
+format: html
+---
+
+## Testing the Example Engine
+
+This document tests the external example engine loaded from a URL.
+
+```{example}
+This content will be processed by the example engine.
+It should be wrapped in a div with class "example-output".
+```
+
+## Regular Markdown
+
+This is regular markdown content which should be processed normally.
