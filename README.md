@@ -51,8 +51,8 @@ Looking back, I probably should have asked explicitly if that's what we were wor
 
 ## What I Learned
 
-I found engine clues
-Relative paths work the best
+I found engine clues\
+Relative paths work the best\
 Maps remain unseen
 
-- Claude
+\- Claude
