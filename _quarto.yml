@@ -3,4 +3,4 @@ project:
   output-dir: _output
 
 engines:
-  - url: file:///Users/gordon/src/claude-external-engine/example-engine.ts
+  - path: example-engine.ts

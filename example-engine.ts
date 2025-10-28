@@ -10,12 +10,9 @@ import {
   LaunchedExecutionEngine,
   ExecutionTarget,
   ExecuteOptions,
-  ExecuteResult,
   DependenciesOptions,
-  DependenciesResult,
   PostProcessOptions,
   MappedString,
-  Format,
   EngineProjectContext
 } from '../quarto-cli/packages/quarto-types/dist/index.js';
 
@@ -41,25 +38,25 @@ const exampleEngineDiscovery: ExecutionEngineDiscovery & { _discovery: boolean }
   launch: (context: EngineProjectContext): LaunchedExecutionEngine => {
     return {
       markdownForFile(file: string): Promise<MappedString> {
-        return Promise.resolve(context.mappedStringFromFile(file));
+        return Promise.resolve(context.quarto.mappedString.fromFile(file));
       },
 
       target: (file: string, _quiet?: boolean, markdown?: MappedString) => {
         if (markdown === undefined) {
-          markdown = context.mappedStringFromFile(file);
+          markdown = context.quarto.mappedString.fromFile(file);
         }
         const target: ExecutionTarget = {
           source: file,
           input: file,
           markdown,
-          metadata: context.readYamlFromMarkdown(markdown.value),
+          metadata: context.quarto.markdownRegex.extractYaml(markdown.value),
         };
         return Promise.resolve(target);
       },
 
       partitionedMarkdown: (file: string) => {
         return Promise.resolve(
-          context.partitionMarkdown(Deno.readTextFileSync(file)),
+          context.quarto.markdownRegex.partition(Deno.readTextFileSync(file)),
         );
       },
 
