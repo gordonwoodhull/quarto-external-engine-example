@@ -4,17 +4,17 @@
  * Copyright (C) 2023 Posit Software, PBC
  */
 
-// Import types directly from built distribution
-import {
+// Import types directly from source
+import type {
   ExecutionEngineDiscovery,
-  LaunchedExecutionEngine,
+  ExecutionEngineInstance,
   ExecutionTarget,
   ExecuteOptions,
   DependenciesOptions,
   PostProcessOptions,
   MappedString,
   EngineProjectContext
-} from '../quarto-cli/packages/quarto-types/dist/index.js';
+} from '../quarto-cli/packages/quarto-types/src/index';
 
 /**
  * Example engine that handles .example files
@@ -35,8 +35,11 @@ const exampleEngineDiscovery: ExecutionEngineDiscovery & { _discovery: boolean }
   /**
    * Launch the engine with a project context
    */
-  launch: (context: EngineProjectContext): LaunchedExecutionEngine => {
+  launch: (context: EngineProjectContext): ExecutionEngineInstance => {
     return {
+      name: exampleEngineDiscovery.name,
+      canFreeze: exampleEngineDiscovery.canFreeze,
+
       markdownForFile(file: string): Promise<MappedString> {
         return Promise.resolve(context.quarto.mappedString.fromFile(file));
       },
