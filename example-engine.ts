@@ -4,7 +4,7 @@
  * Copyright (C) 2023 Posit Software, PBC
  */
 
-// Import types directly from source
+// Import types from bundled types
 import type {
   ExecutionEngineDiscovery,
   ExecutionEngineInstance,
@@ -13,8 +13,11 @@ import type {
   DependenciesOptions,
   PostProcessOptions,
   MappedString,
-  EngineProjectContext
-} from '../quarto-cli/packages/quarto-types/src/index';
+  EngineProjectContext,
+  QuartoAPI,
+} from './types/quarto-types.d.ts';
+
+let quarto: QuartoAPI;
 
 /**
  * Example engine that handles .example files
@@ -22,6 +25,11 @@ import type {
  */
 const exampleEngineDiscovery: ExecutionEngineDiscovery & { _discovery: boolean } = {
   _discovery: true,
+
+  init: (quartoAPI: QuartoAPI) => {
+    quarto = quartoAPI;
+  },
+
   name: 'example',
   defaultExt: '.example',
   defaultYaml: () => ['example:'],
@@ -41,25 +49,23 @@ const exampleEngineDiscovery: ExecutionEngineDiscovery & { _discovery: boolean }
       canFreeze: exampleEngineDiscovery.canFreeze,
 
       markdownForFile(file: string): Promise<MappedString> {
-        return Promise.resolve(context.quarto.mappedString.fromFile(file));
+        return Promise.resolve(quarto.mappedString.fromFile(file));
       },
 
       target: (file: string, _quiet?: boolean, markdown?: MappedString) => {
-        if (markdown === undefined) {
-          markdown = context.quarto.mappedString.fromFile(file);
-        }
+        const md = markdown ?? quarto.mappedString.fromFile(file);
         const target: ExecutionTarget = {
           source: file,
           input: file,
-          markdown,
-          metadata: context.quarto.markdownRegex.extractYaml(markdown.value),
+          markdown: md,
+          metadata: quarto.markdownRegex.extractYaml(md.value),
         };
         return Promise.resolve(target);
       },
 
       partitionedMarkdown: (file: string) => {
         return Promise.resolve(
-          context.quarto.markdownRegex.partition(Deno.readTextFileSync(file)),
+          quarto.markdownRegex.partition(Deno.readTextFileSync(file)),
         );
       },
 
